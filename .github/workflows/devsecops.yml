@@ -1,0 +1,15 @@
+name: DevSecOps Master Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  sonar-workflow:
+    uses: ./.github/workflows/sonarqube.yml
+
+  snyk-workflow:
+    needs: sonar-workflow
+    uses: ./.github/workflows/snyk.yml
