@@ -11,25 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2. Set up JDK 17
       - name: Set up JDK 17
+        id: setup-java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'maven'
 
+      # 3. Export JAVA_HOME for Snyk
+      - name: Export JAVA_HOME
+        run: echo "JAVA_HOME=${{ steps.setup-java.outputs.java-home }}" >> $GITHUB_ENV
+
+      # 4. Verify Java installation
+      - name: Check Java version
+        run: |
+          java -version
+          echo "JAVA_HOME=$JAVA_HOME"
+
+      # 5. Build the project with Maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Snyk Security Scan
+      # 6. Run Snyk Security Scan
+      - name: Run Snyk Security Scan
         uses: snyk/actions/maven@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/maven@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: monitor --all-projects
