@@ -21,26 +21,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn clean install -DskipTests
-
-      - name: Run Tests
-        run: mvn test
+      - name: Build and Test
+        run: mvn -B clean verify
 
       - name: SonarCloud Scan
-        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar \
-              -Dsonar.projectKey=devsecops-team \
-              -Dsonar.organization=tushant-pratap-singh \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=devsecops-team \
+          -Dsonar.organization=tushant-pratap-singh \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-
       - name: Snyk Security Scan
         uses: snyk/actions/maven@master
-        continue-on-error: true   # prevents pipeline from failing due to vulnerabilities
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
