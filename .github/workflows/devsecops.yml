@@ -28,14 +28,15 @@ jobs:
         run: mvn test
 
       - name: SonarCloud Scan
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=devsecops-team \
-          -Dsonar.organization="tushant-pratap-singh" \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar \
+              -Dsonar.projectKey=devsecops-team \
+              -Dsonar.organization=tushant-pratap-singh \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
       - name: Snyk Security Scan
         uses: snyk/actions/maven@master
